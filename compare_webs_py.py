@@ -13,23 +13,25 @@ def checkSite(domain: str, compare: bool, verbose: bool) -> None:
 	- verbose: true/false
 	"""
 	answer = subprocess.check_output(["./compare_webs.sh","-d", domain, "-c", compare, "-v", verbose])
-	print(f"JSON: {answer}")
+	if verbose: 
+		print(f"JSON: {answer}")
 	s = json.loads(answer)
 
 	status = s.get('status', None)
 	msg = s.get('msg', None)
 	mfile = s.get('file', None)
 
-	print(f"status: {status}")
-	print(f"MSG: {msg}")
-	print(f"File: {mfile}")
+	if verbose: 
+		print(f"status: {status}")
+		print(f"MSG: {msg}")
+		print(f"File: {mfile}")
 
-	if status == 0: #  all OK
-		pass
-	elif status == 1: # differences found send compared file
-		print("sending email with attachment...")
-	elif status == 2: #  other error
-		pass
+		if status == 0: #  all OK
+			print('All ok')
+		elif status == 1: # differences found send compared file
+			print("sending email with attachment...")
+		elif status == 2: #  other error
+			print('Error')
 
 
 class MyParser(argparse.ArgumentParser):
@@ -50,5 +52,4 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	
 	for ws in args.arr:
-		print(ws)
 		checkSite(ws, True, False)
