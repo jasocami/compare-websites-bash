@@ -6,7 +6,7 @@ A small tool to capture screenshots of websites and compare them against a previ
 
 ## How it works
 
-1. **Capture only** — takes a screenshot of a given domain and saves it to `static/compare_webs/<domain>/`.
+1. **Capture only** — takes a screenshot of a given domain and saves it to `compare_webs/<domain>/`.
 2. **Capture & compare** — takes a new screenshot and compares it pixel-by-pixel against the most recent previous screenshot using ImageMagick's MAE (Mean Absolute Error) metric. If differences are found, a visual diff image is saved alongside the screenshots.
 
 The Bash script outputs a JSON response that can be consumed programmatically (e.g. by the included Python wrapper to trigger alerts or emails).
@@ -17,7 +17,7 @@ The Bash script outputs a JSON response that can be consumed programmatically (e
 
 - [CutyCapt](http://cutycapt.sourceforge.net/) — command-line utility for rendering web pages to images
 - [ImageMagick](https://imagemagick.org/) — for the `compare` command
-- Python 3 (optional, for the `compare_webs_py.py` wrapper)
+- Python 3 (optional, for the `compare_webs.py` wrapper)
 
 Install on Debian/Ubuntu:
 
@@ -30,9 +30,9 @@ sudo apt-get install cutycapt imagemagick
 ## Files
 
 | File | Description |
-|---|---|
+| --- | --- |
 | `compare_webs.sh` | Main Bash script — captures and/or compares website screenshots |
-| `compare_webs_py.py` | Python wrapper — runs the Bash script for a list of domains |
+| `compare_webs.py` | Python wrapper — runs the Bash script for a list of domains |
 
 ---
 
@@ -45,7 +45,7 @@ bash compare_webs.sh [OPTIONS]
 ```
 
 | Option | Description |
-|---|---|
+| --- | --- |
 | `-d`, `--domain` | Domain to capture (e.g. `www.example.com`) |
 | `-c`, `--compare` | `true` to capture and compare with last screenshot, `false` to only capture |
 | `-v`, `--verbose` | `true` to print progress info during execution |
@@ -84,7 +84,7 @@ The script always prints a JSON object to stdout:
 ```
 
 | `status` | Meaning |
-|---|---|
+| --- | --- |
 | `0` | OK — no differences found (or first capture) |
 | `1` | Differences detected — a diff image has been saved |
 | `2` | Error — missing or invalid arguments |
@@ -93,15 +93,39 @@ The script always prints a JSON object to stdout:
 
 ### Python wrapper
 
-The Python script takes one or more domains as positional arguments and runs the comparison for each:
+The Python script takes one or more domains as positional arguments, with optional flags for compare and verbose:
 
 ```bash
-python3 compare_webs_py.py www.example.com www.another.com
+python3 compare_webs.py [--compare] [--verbose] <site> [<site> ...]
 ```
 
-It calls `compare_webs.sh` internally, parses the JSON response, and can be extended to send email alerts when differences are detected (see `status == 1` in the `checkSite` function).
+| Option | Description |
+| --- | --- |
+| `--compare` | Compare each site against its last screenshot (omit to capture only) |
+| `--verbose` | Print progress info during execution |
+| `sites` | One or more domains to check |
 
-> **Note:** `compare_webs_py.py` must be run from the same directory as `compare_webs.sh`.
+**Capture only (no comparison):**
+
+```bash
+python3 compare_webs.py www.example.com www.another.com
+```
+
+**Capture and compare:**
+
+```bash
+python3 compare_webs.py --compare www.example.com www.another.com
+```
+
+**Capture, compare, and show verbose output:**
+
+```bash
+python3 compare_webs.py --compare --verbose www.example.com www.another.com
+```
+
+Running without any arguments prints the help message. It calls `compare_webs.sh` internally for each site, parses the JSON response, and can be extended to send email alerts when differences are detected (see `status == 1` in the `checkSite` function).
+
+> **Note:** `compare_webs.py` must be run from the same directory as `compare_webs.sh`.
 
 ---
 
@@ -109,16 +133,15 @@ It calls `compare_webs.sh` internally, parses the JSON response, and can be exte
 
 Screenshots are stored under:
 
-```
-static/
-└── compare_webs/
-    └── <domain>/
-        ├── 20240530120000.png        ← new screenshot
-        ├── 20240529110000.png        ← previous screenshot
-        └── compared_20240530120000.png  ← diff image (only if differences found)
+```text
+compare_webs/
+  └── <domain>/
+      ├── 20240530120000.png        ← new screenshot
+      ├── 20240529110000.png        ← previous screenshot
+      └── compared_20240530120000.png  ← diff image (only if differences found)
 ```
 
-The workspace directory (`static/compare_webs/`) is created automatically if it does not exist.
+The workspace directory (`compare_webs/`) is created automatically if it does not exist.
 
 ---
 

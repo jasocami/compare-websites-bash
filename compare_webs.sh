@@ -1,6 +1,6 @@
 #!/bin/bash
 #Powered by Jason
-WORKSPACE="static/compare_webs/"
+WORKSPACE="compare_webs/"
 VERBOSE=false
 DOMAIN=
 COMPARE=false

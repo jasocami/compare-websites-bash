@@ -43,7 +43,9 @@ class MyParser(argparse.ArgumentParser):
 
 if __name__ == "__main__":
 	parser = MyParser()
-	parser.add_argument('arr', nargs='+', help="List of websites to check. Ex: foo bar boo")
+	parser.add_argument('--compare', action='store_true', help="Compare with last screenshot")
+	parser.add_argument('--verbose', action='store_true', help="Verbose output")
+	parser.add_argument('sites', nargs='+', help="List of websites to check. Ex: foo bar boo")
 	
 	if len(sys.argv) == 1:
 		parser.print_help(sys.stderr)
@@ -51,5 +53,9 @@ if __name__ == "__main__":
 	
 	args = parser.parse_args()
 	
-	for ws in args.arr:
-		checkSite(ws, True, False)
+	for ws in args.sites:
+		checkSite(
+			ws,
+			str(args.compare).lower(),
+			str(args.verbose).lower()
+		)
