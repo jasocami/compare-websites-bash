@@ -77,8 +77,8 @@ The script always prints a JSON object to stdout:
 {
   "status": 0,
   "msg": "No differences found",
-  "file_new": "static/compare_webs/www.example.com/20240530120000.png",
-  "file_old": "static/compare_webs/www.example.com/20240529110000.png",
+  "file_new": "compare_webs/www.example.com/20240530120000.png",
+  "file_old": "compare_webs/www.example.com/20240529110000.png",
   "file_compared": ""
 }
 ```
